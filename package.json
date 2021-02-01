@@ -1,0 +1,20 @@
+{
+  "name": "midi2vital",
+  "version": "1.0.0",
+  "description": "A converter between MIDI and Vital presets",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Blusk",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^14.14.22",
+    "tslint": "^5.20.1",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "@tonejs/midi": "^2.0.25"
+  }
+}
