@@ -9,6 +9,7 @@ export interface Lfo {
 export interface Modulation {
 	destination: string;
 	source: string;
+	line_mapping: Lfo;
 }
 
 export interface Sample {

@@ -1,48 +1,61 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function pitchToLFO(pitch) {
-    const semitone = 0.00520833333;
-    let outPitch = 0;
-    const letter = pitch[0];
-    let octave = 0;
-    if (pitch.length === 3) {
-        outPitch += 0.5 * semitone;
-        octave = parseInt(pitch[2], 10);
-    }
-    else {
-        octave = parseInt(pitch[1], 10);
-    }
-    outPitch += octave * 0.0625;
-    switch (letter) {
-        case "A":
-            outPitch += 7 * semitone;
-        case "B":
-            outPitch += 6 * semitone;
+function pitchToLFO(note) {
+    let pitch = parseInt(note.substr(note.length - 1), 10) * 12;
+    switch (note.slice(0, -1)) {
         case "C":
-            outPitch += 5 * semitone;
+            pitch += 0;
+            break;
+        case "C#":
+            pitch += 1;
+            break;
         case "D":
-            outPitch += 4 * semitone;
+            pitch += 2;
+            break;
+        case "D#":
+            pitch += 3;
+            break;
         case "E":
-            outPitch += 3 * semitone;
+            pitch += 4;
+            break;
         case "F":
-            outPitch += 2 * semitone;
+            pitch += 5;
+            break;
+        case "F#":
+            pitch += 6;
+            break;
         case "G":
-            outPitch += 1 * semitone;
+            pitch += 7;
+            break;
+        case "G#":
+            pitch += 8;
+            break;
+        case "A":
+            pitch += 9;
+            break;
+        case "A#":
+            pitch += 10;
+            break;
+        case "B":
+            pitch += 11;
+            break;
     }
-    return outPitch;
+    return 1 - pitch / 12 / 8;
 }
 exports.pitchToLFO = pitchToLFO;
+let lastPitch;
 function applyNote(t, rhythmLFO, pitchLFO, start, end, name) {
-    rhythmLFO.points.push(start, 1.0);
     rhythmLFO.points.push(start, 0.0);
-    rhythmLFO.points.push(end, 0.0);
     rhythmLFO.points.push(end, 1.0);
     const pitch = pitchToLFO(name);
     console.log({ pitch, name });
-    pitchLFO.points.push(start, 1.0);
-    pitchLFO.points.push(start, pitch);
-    pitchLFO.points.push(end, pitch);
-    pitchLFO.points.push(end, 1.0);
+    if (pitch == lastPitch)
+        pitchLFO.points[pitchLFO.points.length - 2] = end;
+    else {
+        pitchLFO.points.push(start, pitch);
+        pitchLFO.points.push(end, pitch);
+    }
+    lastPitch = pitch;
 }
 exports.applyNote = applyNote;
 //# sourceMappingURL=lfoRepr.js.map
