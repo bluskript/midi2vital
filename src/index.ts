@@ -11,7 +11,11 @@ const strData = readFileSync("./initial-preset.vital", {
 const data = JSON.parse(strData) as RootObject;
 const lfoNotes = [];
 
-for (let i = 0; i < 12; i++) {
+const voices = 6;
+let voiceCounters = []
+const maxVoiceNotes = 45;
+
+for (let i = 0; i < voices*2; i++) {
   data.settings.modulations[i].line_mapping = {} as Lfo;
   data.settings.modulations[i].line_mapping.name = "generated" + i;
   data.settings.modulations[i].line_mapping.points = [];
@@ -19,17 +23,19 @@ for (let i = 0; i < 12; i++) {
   data.settings.modulations[i].line_mapping.powers = [];
   data.settings.modulations[i].line_mapping.points.push(0, 1);
   lfoNotes.push(0);
+  voiceCounters.push(0);
 }
 
 const targetTrack = midi.tracks[0];
-targetTrack.notes.slice(0, 45).forEach((v) => {
+targetTrack.notes.forEach((v) => {
   const noteStartPercent = v.time / targetTrack.duration;
   const noteEndPercent = (v.time + v.duration) / targetTrack.duration;
-  for (let i = 0; i < 12; i += 2) {
-    if (noteStartPercent < lfoNotes[i]) {
+  for (let i = 0; i < voices*2; i += 2) {
+    if (noteStartPercent < lfoNotes[i] || voiceCounters[i] > maxVoiceNotes) {
       continue;
     }
     lfoNotes[i] = noteEndPercent;
+    voiceCounters[i]++;
 
     applyNote(
       targetTrack,
@@ -43,7 +49,7 @@ targetTrack.notes.slice(0, 45).forEach((v) => {
   }
 });
 
-for (let i = 0; i < 12; i++) {
+for (let i = 0; i < voices*2; i++) {
   data.settings.modulations[i].line_mapping.points.push(1, 1);
   data.settings.modulations[i].line_mapping.num_points = data.settings.modulations[i].line_mapping.points.length / 2;
   data.settings.modulations[i].line_mapping.powers = new Array(data.settings.modulations[i].line_mapping.num_points).fill(20);
