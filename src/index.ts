@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { applyNote } from "./lfoRepr";
 import { RootObject, Lfo } from "./schema";
 
-const midiFile = readFileSync(process.argv.slice(2)[0] || "./old-macdonald-had-a-farm.mid");
+const midiFile = readFileSync(process.argv[0] || "./old-macdonald-had-a-farm.mid");
 const midi = new Midi(midiFile);
 const strData = readFileSync("./initial-preset.vital", {
   encoding: "utf-8",
