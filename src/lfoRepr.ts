@@ -10,25 +10,23 @@ export function pitchToLFO(note: string) {
   return 1 - pitch / 12 / 8;
 }
 
-let lastPitch;
-
 export function applyNote(
   t: Track,
   rhythmLFO: Lfo,
   pitchLFO: Lfo,
   start: number,
   end: number,
-  name: string
+  name: string,
+  lastName: string
 ) {
   rhythmLFO.points.push(start, 0.0);
   rhythmLFO.points.push(end, 1.0);
   const pitch = pitchToLFO(name);
   console.log({pitch, name});
-  if (pitch == lastPitch)
+  if (name === lastName)
     pitchLFO.points[pitchLFO.points.length - 2] = end
   else {
     pitchLFO.points.push(start, pitch);
     pitchLFO.points.push(end, pitch);
   }
-  lastPitch = pitch;
 }

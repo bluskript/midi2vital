@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync } from "fs";
 import { applyNote } from "./lfoRepr";
 import { RootObject, Lfo } from "./schema";
 
-const midiFile = readFileSync(process.argv[0] || "./old-macdonald-had-a-farm.mid");
+const args = process.argv.slice(2);
+const midiFile = readFileSync(args[0] || "./old-macdonald-had-a-farm.mid");
 const midi = new Midi(midiFile);
 const strData = readFileSync("./initial-preset.vital", {
   encoding: "utf-8",
@@ -11,17 +12,19 @@ const strData = readFileSync("./initial-preset.vital", {
 const data = JSON.parse(strData) as RootObject;
 const lfoNotes = [];
 
-const voices = 6;
-let voiceCounters = []
+const voices = parseInt(args[1]) || 6;
+let voiceCounters = [];
+let voiceNotes = [];
 const maxVoiceNotes = 45;
 
 for (let i = 0; i < voices*2; i++) {
-  data.settings.modulations[i].line_mapping = {} as Lfo;
-  data.settings.modulations[i].line_mapping.name = "generated" + i;
-  data.settings.modulations[i].line_mapping.points = [];
-  data.settings.modulations[i].line_mapping.num_points = 0;
-  data.settings.modulations[i].line_mapping.powers = [];
-  data.settings.modulations[i].line_mapping.points.push(0, 1);
+  const currentMod = data.settings.modulations[i]
+  currentMod.line_mapping = {} as Lfo;
+  currentMod.line_mapping.name = "generated" + i;
+  currentMod.line_mapping.points = [];
+  currentMod.line_mapping.num_points = 0;
+  currentMod.line_mapping.powers = [];
+  currentMod.line_mapping.points.push(0, 1);
   lfoNotes.push(0);
   voiceCounters.push(0);
 }
@@ -43,8 +46,10 @@ targetTrack.notes.forEach((v) => {
       data.settings.modulations[i + 1].line_mapping,
       noteStartPercent,
       noteEndPercent,
-      v.name
+      v.name,
+      voiceNotes[i]
     );
+    voiceNotes[i] = v.name;
     break;
   }
 });

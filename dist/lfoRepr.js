@@ -8,19 +8,17 @@ function pitchToLFO(note) {
     return 1 - pitch / 12 / 8;
 }
 exports.pitchToLFO = pitchToLFO;
-let lastPitch;
-function applyNote(t, rhythmLFO, pitchLFO, start, end, name) {
+function applyNote(t, rhythmLFO, pitchLFO, start, end, name, lastName) {
     rhythmLFO.points.push(start, 0.0);
     rhythmLFO.points.push(end, 1.0);
     const pitch = pitchToLFO(name);
     console.log({ pitch, name });
-    if (pitch == lastPitch)
+    if (name === lastName)
         pitchLFO.points[pitchLFO.points.length - 2] = end;
     else {
         pitchLFO.points.push(start, pitch);
         pitchLFO.points.push(end, pitch);
     }
-    lastPitch = pitch;
 }
 exports.applyNote = applyNote;
 //# sourceMappingURL=lfoRepr.js.map
